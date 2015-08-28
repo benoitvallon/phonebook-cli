@@ -27,7 +27,7 @@ def create(argsList):
     else:
         createDatabase(argsList[2])
 
-def lookup():
+def lookup(argsList):
     if not 2 in range(len(argsList)):
         print 'A name must be specified'
     if not 3 in range(len(argsList)):
@@ -54,6 +54,10 @@ def add(argsList):
         print 'A phone must be specified'
     if not 4 in range(len(argsList)):
         print 'A database filename must be specified'
+
+    if ";" in str(argsList[2]):
+        print 'Your user\'s name can not contain the character ";"'
+        return
 
     filename = argsList[4]
     phonebook = getPhonebook(filename)
@@ -82,18 +86,18 @@ def change(argsList):
     userEdited = False
     for key, value in phonebook.iteritems():
         if argsList[2] == key:
-            userDeleted = True
+            userEdited = True
             file.write(key + ';' + str(argsList[3]) + '\n')
         else:
             file.write(key + ';' + value + '\n')
     closeDatabase(file)
 
-    if userDeleted:
+    if userEdited:
         print 'User edited'
     else:
         print 'User not found'
 
-def remove():
+def remove(argsList):
     if not 2 in range(len(argsList)):
         print 'A name must be specified'
     if not 3 in range(len(argsList)):
@@ -116,7 +120,7 @@ def remove():
     else:
         print 'User not found'
 
-def reverseLookup():
+def reverseLookup(argsList):
     if not 2 in range(len(argsList)):
         print 'A phone must be specified'
     if not 3 in range(len(argsList)):
