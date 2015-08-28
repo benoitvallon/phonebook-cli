@@ -1,93 +1,66 @@
 import re
+from helpers import printEntries, checkParams, closeDatabase, getPhonebook
 
-def closeDatabase(file):
-    file.close()
-    print 'database closed'
+def create(argsList):
+    params = checkParams('create', argsList)
 
-def createDatabase(filename):
-    file = open(filename, 'w')
+    file = open(params['Database'], 'w')
     print "Database created"
     closeDatabase(file)
 
-def getPhonebook(filename):
-    file = open(filename, 'r')
-
-    phonebook = {}
-    for line in file:
-        line = line.split(';')
-        phonebook[line[0].strip()] = line[1].strip()
-
-    closeDatabase(file)
-    return phonebook
-
-def create(argsList):
-    # because I didn't like the idea to loop through the list and check if 2 is in the list
-    if not 2 in range(len(argsList)):
-        print 'A database filename must be specified'
-    else:
-        createDatabase(argsList[2])
-
 def lookup(argsList):
-    if not 2 in range(len(argsList)):
-        print 'A name must be specified'
-    if not 3 in range(len(argsList)):
-        print 'A database filename must be specified'
+    params = checkParams('lookup', argsList)
 
-    filename = argsList[3]
-    phonebook = getPhonebook(filename)
+    phonebook = getPhonebook(params['database'])
 
     entries = []
     for key, value in phonebook.iteritems():
-        if argsList[2] in key:
+        if params['name'] in key:
             entries.append(key + ' ' + str(value))
 
-    if len(entries):
-        for entry in entries:
-            print entry
-    else:
-        print 'No entry found'
+    printEntries(entries)
+
+def reverseLookup(argsList):
+    params = checkParams('reverseLookup', argsList)
+
+    phonebook = getPhonebook(params['database'])
+
+    entries = []
+    for key, value in phonebook.iteritems():
+        if params['phone'] in value:
+            entries.append(key + ' ' + str(value))
+
+    printEntries(entries)
 
 def add(argsList):
-    if not 2 in range(len(argsList)):
-        print 'A name must be specified'
-    if not 3 in range(len(argsList)):
-        print 'A phone must be specified'
-    if not 4 in range(len(argsList)):
-        print 'A database filename must be specified'
+    params = checkParams('add', argsList)
 
     if ";" in str(argsList[2]):
         print 'Your user\'s name can not contain the character ";"'
         return
 
-    filename = argsList[4]
-    phonebook = getPhonebook(filename)
+    phonebook = getPhonebook(params['database'])
 
     # is user already existing
-    if str(argsList[2]) in phonebook:
+    if str(params['name']) in phonebook:
         print 'This user already exist, you must specify another name'
     else:
-        file = open(filename, 'a')
-        file.write(str(argsList[2]) + ';' + str(argsList[3]) + '\n')
+        file = open(params['database'], 'a')
+        file.write(str(params['name']) + ';' + str(params['phone']) + '\n')
         closeDatabase(file)
         print 'User added'
 
 def change(argsList):
-    if not 2 in range(len(argsList)):
-        print 'A name must be specified'
-    if not 3 in range(len(argsList)):
-        print 'A phone must be specified'
-    if not 4 in range(len(argsList)):
-        print 'A database filename must be specified'
+    params = checkParams('change', argsList)
 
-    filename = argsList[4]
-    phonebook = getPhonebook(filename)
+    phonebook = getPhonebook(params['database'])
 
-    file = open(filename, 'w')
+    file = open(params['database'], 'w')
     userEdited = False
     for key, value in phonebook.iteritems():
-        if argsList[2] == key:
+        if params['name'] == key:
             userEdited = True
-            file.write(key + ';' + str(argsList[3]) + '\n')
+            file.write(key + ';' + str(params['phone']) + '\n')
         else:
             file.write(key + ';' + value + '\n')
     closeDatabase(file)
@@ -98,18 +71,14 @@ def change(argsList):
         print 'User not found'
 
 def remove(argsList):
-    if not 2 in range(len(argsList)):
-        print 'A name must be specified'
-    if not 3 in range(len(argsList)):
-        print 'A database filename must be specified'
+    params = checkParams('remove', argsList)
 
-    filename = argsList[3]
-    phonebook = getPhonebook(filename)
+    phonebook = getPhonebook(params['database'])
 
-    file = open(filename, 'w')
+    file = open(params['database'], 'w')
     userDeleted = False
     for key, value in phonebook.iteritems():
-        if argsList[2] == key:
+        if params['name'] == key:
             userDeleted = True
         else:
             file.write(key + ';' + value + '\n')
@@ -119,23 +88,3 @@ def remove(argsList):
         print 'User deleted'
     else:
         print 'User not found'
-
-def reverseLookup(argsList):
-    if not 2 in range(len(argsList)):
-        print 'A phone must be specified'
-    if not 3 in range(len(argsList)):
-        print 'A database filename must be specified'
-
-    filename = argsList[3]
-    phonebook = getPhonebook(filename)
-
-    entries = []
-    for key, value in phonebook.iteritems():
-        if argsList[2] in value:
-            entries.append(key + ' ' + str(value))
-
-    if len(entries):
-        for entry in entries:
-            print entry
-    else:
-        print 'No entry found'
