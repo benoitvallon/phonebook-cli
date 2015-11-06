@@ -4,7 +4,7 @@ from helpers import printEntries, checkParams, closeDatabase, getPhonebook
 def create(argsList):
     params = checkParams('create', argsList)
 
-    file = open(params['Database'], 'w')
+    file = open(params['database'], 'w')
     print "Database created"
     closeDatabase(file)
 
